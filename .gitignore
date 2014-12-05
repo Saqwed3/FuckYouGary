@@ -9,7 +9,6 @@ namespace Jacks_Course_Work
 
 
 
-
     class Program
     {
         struct Player
@@ -32,8 +31,6 @@ namespace Jacks_Course_Work
             Console.WriteLine("Welcome to Tactical Space Cheese Racer!");
             Console.ReadLine();
         }
-
-
 
 
         static int ReadNumber(int min, int max, string prompt)
@@ -73,20 +70,14 @@ namespace Jacks_Course_Work
 
         static int Dice()
         {
-            return Roll.Next(1, 7);
-        }
-
-        static int TestDice()
-        {
             if (testGame == true)
             {
-                int diceRoll = testRoll - 1;
-                Console.WriteLine("Enter the value you would like to move.");
-                diceRoll = int.Parse(Console.ReadLine());
+                int diceTest = ReadNumber(1, 65, "Enter what you would like to roll: ");
+                return diceTest;
             }
-                return testRoll;
-        }
 
+            return Roll.Next(1, 7);
+        }
 
         static void GetPlayers()
         {
@@ -104,8 +95,6 @@ namespace Jacks_Course_Work
 
         static void GameTurn()
         {
-            
-            // HERE PUT THIS IN A COMMAND THAT ALLOWS YOU TO PICK YES OR NO AND THIS IS NO TO TEST! - DO THIS!!
             Console.WriteLine();
             Console.WriteLine("Press enter to roll the dice");
             Console.ReadLine();
@@ -120,7 +109,7 @@ namespace Jacks_Course_Work
                 if (players[i].Pos >= 64)
                 {
                     break;
-                }          
+                }
             }
         }
 

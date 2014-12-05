@@ -1,0 +1,334 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Jacks_Course_Work
+{
+
+
+
+
+    class Program
+    {
+        struct Player
+        {
+            public string Name;
+            public int Pos;
+        }
+        static Player[] players = new Player[4];
+        static int[] cheeseSquare = new int[8] { 8, 15, 19, 28, 33, 45, 55, 59 };
+        static int i;
+        static Random Roll = new Random();
+        static int testRoll = 0;
+        static int numberOfPlayers;
+        static bool GameEnd = false;
+        static bool loop = false;
+        static bool testGame = false;
+
+        static void Start()
+        {
+            Console.WriteLine("Welcome to Tactical Space Cheese Racer!");
+            Console.ReadLine();
+        }
+
+
+
+
+        static int ReadNumber(int min, int max, string prompt)
+        {
+            int number = 0;
+            while (true)
+            {
+                Console.Write(prompt);
+                try
+                {
+                    number = int.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    Console.WriteLine("Please only enter numbers!");
+                    continue;
+                }
+
+                if (number > max)
+                {
+                    Console.WriteLine("Number too high!");
+                    continue;
+                }
+                if (number < min)
+                {
+                    Console.WriteLine("Number too low!");
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return number;
+        }
+
+
+        static int Dice()
+        {
+            return Roll.Next(1, 7);
+        }
+
+        static int TestDice()
+        {
+            if (testGame == true)
+            {
+                int diceRoll = testRoll - 1;
+                Console.WriteLine("Enter the value you would like to move.");
+                diceRoll = int.Parse(Console.ReadLine());
+            }
+                return testRoll;
+        }
+
+
+        static void GetPlayers()
+        {
+            numberOfPlayers = ReadNumber(2, 4, "Enter the number of players: ");
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                int a = i + 1;
+                Console.Write("Player {0}: ", a);
+                string playerName = Console.ReadLine();
+                players[i].Name = playerName;
+                players[i].Pos = 0;
+                GameEnd = false;
+            }
+        }
+
+        static void GameTurn()
+        {
+            
+            // HERE PUT THIS IN A COMMAND THAT ALLOWS YOU TO PICK YES OR NO AND THIS IS NO TO TEST! - DO THIS!!
+            Console.WriteLine();
+            Console.WriteLine("Press enter to roll the dice");
+            Console.ReadLine();
+
+            for (i = 0; i < numberOfPlayers; i++)
+            {
+                int playerNo = i;
+                int playerRoll = Dice();
+                Console.WriteLine("Player : {0} rolled a {1}", players[i].Name, playerRoll);
+                TakeTurn(i, playerRoll, playerNo);
+
+                if (players[i].Pos >= 64)
+                {
+                    break;
+                }          
+            }
+        }
+
+
+
+        static void TakeTurn(int player, int roll, int playerNo)
+        {
+            players[player].Pos = players[player].Pos + roll;
+            if (players[player].Pos >= 64)
+            {
+                GameEnd = true;
+                Console.WriteLine();
+                Console.WriteLine("Player: {0} has won!", players[player].Name);
+            }
+
+            for (int j = 0; j < cheeseSquare.Length; j++)
+            {
+                if ((players[player].Pos == cheeseSquare[j]))
+                {
+                    TacticalDice(player);
+                    return;
+                }
+            }
+
+            string tacticalDiceChoiceText, tacticalDiceChoice;
+
+            Console.Write("Would you like to role the tactical dice? (Y or N): ");
+            tacticalDiceChoiceText = Console.ReadLine();
+            tacticalDiceChoice = tacticalDiceChoiceText.ToUpper();
+
+            if (tacticalDiceChoice == "N")
+            {
+                Console.WriteLine("Try your luck next time");
+                Console.ReadLine();
+            }
+            else if (tacticalDiceChoice == "Y")
+            {
+                TacticalDice(playerNo);
+            }
+
+
+        }
+
+
+
+        static void ShowPlace()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine();
+            Console.WriteLine("Tactical Space Cheese Racer Status Report");
+            Console.WriteLine("==========================================");
+            Console.WriteLine("There are {0} spacecrafts in the game", numberOfPlayers);
+
+            for (int i = 0; i < numberOfPlayers; i++)
+            {
+                Console.WriteLine("{0} is on square {1}", players[i].Name, players[i].Pos);
+            }
+        }
+
+
+        static void TacticalDice(int playerNo)
+        {
+            int tacticalDice = Dice();
+
+            switch (tacticalDice)
+            {
+                case 1:
+                    {
+                        Console.WriteLine("Your rockets engine has exploded and you have been sent back to the start!");
+                        players[playerNo].Pos = 0;
+                        break;
+                    }
+
+                case 2:
+                    {
+                        Console.WriteLine("You set off a chain reaction and explode everyone engines on the same square as you!");
+                        for (i = 0; i < numberOfPlayers; i++)
+                        {
+                            int currentpos = players[playerNo].Pos;
+                            if (players[i].Pos == currentpos)
+                            {
+                                players[i].Pos = 0;
+                            }
+
+                        }
+                        break;
+                    }
+
+                case 3:
+                    {
+                        Console.WriteLine("You have set off a gamma cheese chain, this has destroyed the other rockets engines but yours is safe");
+                        for (i = 0; i < numberOfPlayers; i++)
+                        {
+                            int currentpos = players[playerNo].Pos;
+                            if (players[i].Pos == currentpos)
+                            {
+                                players[i].Pos = 0;
+                            }
+                            players[playerNo].Pos = currentpos;
+                        }
+
+                        break;
+                    }
+
+                case 4:
+                    {
+                        Console.WriteLine("You have activated CHEDDER CHEESE POWERS! You move 6 places forward");
+                        players[playerNo].Pos = players[playerNo].Pos + 6;
+                        break;
+                    }
+
+                case 5:
+                    {
+                        Console.WriteLine("You have activated cheese transference power you can move to any other player on the board, choose wisely!");
+                        string moveToPlayerText;
+                        int moveToPlayer = 0;
+                        do
+                        {
+                            try
+                            {
+                                Console.WriteLine("Enter the player who you would like to move to: ");
+                                moveToPlayerText = Console.ReadLine();
+                                moveToPlayer = int.Parse(moveToPlayerText);
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Please enter a number between 1 and 4");
+                            }
+                        } while (loop == true);
+
+                        players[playerNo].Pos = players[moveToPlayer].Pos;
+
+                        break;
+                    }
+                case 6:
+                    {
+                        Console.WriteLine("You have activated gamma cheese transference power you can swap places with any other player on the board, choose wisely!");
+                        string moveToPlayerText;
+                        int moveToPlayer = 0;
+                        do
+                        {
+                            try
+                            {
+                                Console.WriteLine("Enter the player who you would like to swap with: ");
+                                moveToPlayerText = Console.ReadLine();
+                                moveToPlayer = int.Parse(moveToPlayerText) - 1;
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Please enter a number between 1 and 4");
+                            }
+                        } while (loop == true);
+                        int tempStoredPosition = players[playerNo].Pos;
+
+                        players[playerNo].Pos = players[moveToPlayer].Pos;
+                        players[moveToPlayer].Pos = tempStoredPosition;
+                        break;
+                    }
+            }
+        }
+
+
+
+
+
+        static void Main(string[] args)
+        {
+            string doWeGoRoundString, doWeGoRound;
+            string gameTestText, gameTest;
+
+            Console.Write("Will you be running a test game on this run? (Y or N): ");
+            gameTestText = Console.ReadLine();
+            gameTest = gameTestText.ToUpper();
+
+            if (gameTest == "N")
+            {
+                Console.WriteLine("Lets play the full game then!");
+                Console.ReadLine();
+            }
+            else if (gameTest == "Y")
+            {
+                Console.WriteLine("This is the test game, here you enter the values of the dice");
+                testGame = true;
+            }
+            Console.Clear();
+
+
+            do
+            {
+                Start();
+                GetPlayers();
+                do
+                {
+                    ShowPlace();
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    GameTurn();
+                }
+                while (GameEnd == false);
+                Console.Write("Would you like to play another game? (Y or N):");
+                doWeGoRoundString = Console.ReadLine();
+                doWeGoRound = doWeGoRoundString.ToUpper();
+                Console.Clear();
+
+                if (doWeGoRound == "N")
+                    Console.WriteLine("Maybe Next Time Then!");
+                Console.ReadLine();
+            }
+            while (doWeGoRound == "Y");
+        }
+    }
+}
